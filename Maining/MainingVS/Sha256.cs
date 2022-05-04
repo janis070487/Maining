@@ -1,4 +1,6 @@
-﻿using System;
+﻿// vairak pa 255 mb nevar apstradat jaizlabo metode FormatData() pie atzimes __1__ jo ints var glabat par 32
+// bitiem, bet vajag 64 biti
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MainingVS
 {
-    internal class Sha256
+    public class Sha256
     {
         public string path { get; set; }
         private uint[] konstant = {
@@ -23,8 +25,57 @@ namespace MainingVS
         {
             0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
         };
-        private uint[] W = new uint[64];
-        private byte[] data;
-        private byte[] block = new byte[64];
+        private uint[] W = new uint[64];    // glabās vārdus ar kuriem strādās
+        private byte[] data;                // glabāsies dati kurus nolasīs no faila
+        private byte[] newdata;             // glabajas dati pec nolasišanas un apstrades
+        private byte[] block = new byte[64];  // glabāsies bloki pa 512 bitiem
+        private int hovblocknead;
+        FileRead file;
+        public string lastHash { get; }
+        // konstruktors kas pieņem ceļu un faila nosaukumu kuram vajadzēs ireiķināt hesh summu
+        public Sha256(string path)
+        {
+            this.path = path;
+            file = new FileRead(path);
+        }
+        private void FormatData()
+        {
+            int hovNeead = data.Length * 8 + 72;
+            if (hovNeead > 512)
+            {
+                if (hovNeead % 512 != 0)
+                {
+                    hovblocknead = (hovNeead / 512) + 1;
+                }
+                else
+                {
+                    hovblocknead = (hovNeead / 512);
+                }
+            }
+            else { hovblocknead = 1; }
+            newdata = new byte[hovblocknead * 64];
+            for (int i = 0; i < data.Length; i++)
+            {
+                newdata[i] = data[i];
+            }
+            newdata[data.Length] = 128;    // visu datu beigas pievieno "1"; bitu uzliek HIGHT limeni
+            int hovdataBits = data.Length * 8;   //   __1__
+            int shiftBits = 24;
+            for(int i = newdata.Length - 4; i < newdata.Length; i++) //   __1__
+            {
+                int value = (hovdataBits >> shiftBits) & 0x000000ff ;
+
+                newdata[i] = Convert.ToByte(value);//101 208
+                shiftBits -= 8;
+            }
+            //int newFileLenght = 
+        }
+
+        public string GetHash()
+        {
+            data = file.Load(); // Nolasam visu failu un saglabājam masiva
+            FormatData();
+            return lastHash;
+        }
     }
 }
