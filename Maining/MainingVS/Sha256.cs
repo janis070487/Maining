@@ -10,6 +10,7 @@ namespace MainingVS
 {
     public class Sha256
     {
+        PrintInfo print = new PrintInfo();
         public string path { get; set; }
         private uint[] konstant = {
             0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -59,22 +60,38 @@ namespace MainingVS
                 newdata[i] = data[i];
             }
             newdata[data.Length] = 128;    // visu datu beigas pievieno "1"; bitu uzliek HIGHT limeni
-            int hovdataBits = data.Length * 8;   //   __1__
-            int shiftBits = 24;
-            for(int i = newdata.Length - 4; i < newdata.Length; i++) //   __1__
+           ulong hovdataBits = Convert.ToUInt64(data.Length * 8);   //   __1__
+            int shiftBits = 56;
+            for(int i = newdata.Length - 8; i < newdata.Length; i++) //   __1__
             {
-                int value = (hovdataBits >> shiftBits) & 0x000000ff ;
+                ulong value = (hovdataBits >> shiftBits) & 0x00000000000000ff ;
 
                 newdata[i] = Convert.ToByte(value);//101 208
                 shiftBits -= 8;
             }
             //int newFileLenght = 
         }
+        private void Get16Words(int bloks) // 
+        {
+            for(int i = 0; i < 16; i++)
+            {
+                for(int a = 0; a < 4; a++)                // 4 * 63 * 1
+                {
+                    W[i] = W[i] + Convert.ToUInt32(newdata[] << (a * 8));
+                }
+            }
+        }
 
         public string GetHash()
         {
             data = file.Load(); // Nolasam visu failu un saglabājam masiva
-            FormatData();
+            FormatData();       // Noformate datus blokos pa 512 bitiem un pieliek gala to kopejo garumu
+           
+            for (int s = 0; s < hovblocknead; s++) // apstradas blokus pa 512 bitiem
+            {
+                Get16Words(s);
+            }
+            print.PrintBinary_32(W);
             return lastHash;
         }
     }
