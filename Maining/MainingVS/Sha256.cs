@@ -77,7 +77,7 @@ namespace MainingVS
             {
                 for(int a = 0; a < 4; a++)                // 4 * 63 * 1
                 {
-                    W[i] = W[i] + Convert.ToUInt32(newdata[] << (a * 8));
+                    //W[i] = W[i] + Convert.ToUInt32(newdata[] << (a * 8));
                 }
             }
         }
